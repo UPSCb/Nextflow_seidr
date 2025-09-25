@@ -1,7 +1,7 @@
 process PEARSON {
     container params.seidr_container
 
-    publishDir "${params.outdir}/pearson", mode: 'copy'
+    publishDir "${params.outdir}/pearson", mode: 'symlink'
 
     input:
     tuple(path(expr), path(genes))
