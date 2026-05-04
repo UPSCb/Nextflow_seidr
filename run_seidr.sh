@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH --account=HPC2N2025-131
+#SBATCH --account=HPC2N2025-155
 #SBATCH --ntasks=1
 #SBATCH --time=168:00:00
 #SBATCH --mem=2G
@@ -10,7 +10,7 @@
 
 set -u -o pipefail
 
-ml Nextflow GCCcore/11.3.0 Graphviz/5.0.0
+ml Nextflow/25.10.0 
 
 
-nextflow run main.nf -work-dir data/workdir  -c nextflow.config   -with-trace -with-report data/report_$(date "+%Y_%m_%d_%H_%M").html -resume
+nextflow run main.nf -work-dir data/workdir  -c nextflow.config   -with-trace -with-report data/report.html -resume

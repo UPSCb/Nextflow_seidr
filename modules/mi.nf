@@ -11,6 +11,6 @@ process MI {
 
     script:
     """
-    seidr import -r -z -u -F lm -n MI -o "mi.sf" -i ${mi} -g ${genes} -O ${task.cpus}
+    seidr import -r -z -u -F lm -n MI -o "mi.sf" -i mi.tsv -g ${genes} -O ${task.cpus}
     """
 }
