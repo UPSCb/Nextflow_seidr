@@ -70,8 +70,26 @@ workflow {
     AGGREGATE(all_sf_files)
 
     HARDTHRESHOLD(AGGREGATE.out)
+
+    // Create channel with thresholds for parallel backbone processing
+    threshold_ch = channel.of(
+        [2.33, 1],
+        [2.05, 2], 
+        [1.88, 3],
+        [1.75, 4],
+        [1.64, 5],
+        [1.55, 6],
+        [1.48, 7],
+        [1.41, 8],
+        [1.34, 9],
+        [1.28, 10]
+    )
+    .combine(AGGREGATE.out)
+    .map { threshold, index, aggregated_sf -> 
+        tuple(threshold, index, aggregated_sf)
+    }
     
-    BACKBONE(AGGREGATE.out)
+    BACKBONE(threshold_ch)
 
 
 }
