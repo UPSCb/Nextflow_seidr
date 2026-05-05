@@ -4,13 +4,14 @@ process ROCNONEGATIVE {
     publishDir "${params.outdir}/ROC_NoNegative", mode: 'symlink'
 
     input:
-    tuple (path(evaluation.sf), params.PositiveGoldStandard)
+    tuple val(sample_id), path(evaluation_sf)
+    path positive_gold_standard
 
     output:
-    path("backbone-$index.roc.tsv"), emit: sf_file
+    path("${sample_id}.roc.tsv"), emit: roc_file
 
     script:
     """
-    seidr roc -f -n ${evaluation.sf} -g ${params.PositiveGoldStandard} > roc.tsv
+    seidr roc -f -n ${evaluation_sf} -g ${positive_gold_standard} > ${sample_id}.roc.tsv
     """
 }

@@ -95,9 +95,39 @@ workflow {
     
     BACKBONE(threshold_ch)
 
+    // Prepare channels for ROC analysis
+    // Create channel for HARDTHRESHOLD output with identifier
+    hardthreshold_ch = HARDTHRESHOLD.out
+        .map { sf_file -> tuple("hardthreshold", sf_file) }
+    
 
-    ROC(BACKBONE.out, params.PositiveGoldStandard, params.NegativeGoldStandard)
-
-    ROCNONEGATIVE(BACKBONE.out, params.PositiveGoldStandard)
+    // Create channel for BACKBONE outputs with identifiers
+    backbone_ch = BACKBONE.out
+        .map { sf_file -> 
+            // Extract index from filename (backbone-X-percent.sf)
+            def filename = sf_file.getName()
+            def matcher = filename =~ /backbone-(\d+)-percent\.sf/
+            def index = matcher ? matcher[0][1] : "unknown"
+            tuple("backbone-${index}", sf_file)
+        }
+    
+    // Combine all evaluation files
+    all_evaluation_files = hardthreshold_ch.mix(backbone_ch)
+    
+    // Conditional ROC analysis based on NegativeGoldStandard parameter
+    if (params.NegativeGoldStandard && params.NegativeGoldStandard != "") {
+        // Use ROC process when NegativeGoldStandard is provided
+        ROC(
+            all_evaluation_files,
+            file(params.PositiveGoldStandard, checkIfExists: true),
+            file(params.NegativeGoldStandard, checkIfExists: true)
+        )
+    } else {
+        // Use ROCNONEGATIVE process when NegativeGoldStandard is empty
+        ROCNONEGATIVE(
+            all_evaluation_files,
+            file(params.PositiveGoldStandard, checkIfExists: true)
+        )
+    }
 
 }
