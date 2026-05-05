@@ -30,6 +30,10 @@ include {HARDTHRESHOLD} from './modules/hardthreshold.nf'
 
 include {BACKBONE} from './modules/backbone.nf'
 
+include {ROC} from './modules/Roc.nf'
+
+include {ROCNONEGATIVE} from './modules/Roc_NoNegative.nf'
+
 workflow {
     // Create input channel
     input_ch = channel.of(
@@ -91,5 +95,9 @@ workflow {
     
     BACKBONE(threshold_ch)
 
+
+    ROC(BACKBONE.out, params.PositiveGoldStandard, params.NegativeGoldStandard)
+
+    ROCNONEGATIVE(BACKBONE.out, params.PositiveGoldStandard)
 
 }

@@ -7,7 +7,7 @@ process ARACNE {
     tuple path(expr), path(genes), path("mi.tsv"), path("clr.sf")
 
     output:
-    path("ARACNE.sf"), emit: sf_file
+    path("aracne.sf"), emit: sf_file
 
     script:
     """
