@@ -12,7 +12,6 @@
 #' * Libraries
 suppressPackageStartupMessages({
   library(gplots)
-  library(here)
   library(matrixStats)
   library(pander)
   library(tidyverse)
@@ -51,7 +50,7 @@ plotRoc <- function(f){
     geom_line() + 
     scale_x_continuous(name="1-specificity (FPR)") + 
     scale_y_continuous(name="sensitivity (TPR)") +
-    ggtitle(label=paste(sub("_roc\\.tsv","",basename(f)), " ROC curve"))
+    ggtitle(label=paste(sub(".roc\\.tsv","",basename(f)), " ROC curve"))
   
   suppressMessages(suppressWarnings(plot(p)))
   
@@ -61,21 +60,21 @@ plotRoc <- function(f){
 
 #' # ROC
 #' ## Aggregated
-#' ```{R CHANGEME1, echo=FALSE, eval=FALSE}
+#' ```{R Aggregated, echo=FALSE, eval=FALSE}
 #' Change the path to the aggregated ROC results, if required. That ROC file must have been created using seidr roc -a option
 #' ```
-res <- plotRoc(here("data/seidr/results/ROC/aggregated_roc.tsv"))
+res <- plotRoc("aggregated.roc.tsv")
 
 #' ### Stats of the gold standard analysis
 pander(res)
 
 #' ## Backbone
-#' ```{R CHANGEME1, echo=FALSE, eval=FALSE}
+#' ```{R backbone, echo=FALSE, eval=FALSE}
 #' Change the path to the backbone ROC results directory as well as the file matching patter,if required. 
 #' These ROC files must have been created using seidr roc -a option
 #' ```
-files <- dir(here("data/seidr/results/ROC/"),pattern="backbone.*\\.tsv",full.names=TRUE)
-names(files) <- gsub("backbone-|_roc.tsv","",basename(files))
+files <- dir("./",pattern="backbone.*\\.tsv",full.names=TRUE)
+names(files) <- gsub("backbone-|.roc.tsv","",basename(files))
 files <- files[order(as.integer(sub("-percent","",names(files))))]
 resb <- lapply(files,plotRoc)
 
@@ -84,10 +83,10 @@ resb <- lapply(files,plotRoc)
 pander(resb)
 
 #' ## Hard threshold
-#' ```{R CHANGEME1, echo=FALSE, eval=FALSE}
+#' ```{R HardThreshold, echo=FALSE, eval=FALSE}
 #' Change the path to the hard threshold ROC results, if required. That ROC file must have been created using seidr roc -a option
 #' ```
-resh <- plotRoc(here("data/seidr/results/ROC/hardthreshold.roc.tsv"))
+resh <- plotRoc("hardthreshold.roc.tsv")
 
 #' ### Stats of the gold standard analysis
 pander(resh)
@@ -95,7 +94,8 @@ pander(resh)
 
 #' # Summary
 #' Report all AUCs
-aucs <- c(lapply(resb,select,c("ALGO","AUC")),aggregated=list(select(res,c("ALGO","AUC")))) %>% 
+aucs <- c(lapply(resb,select,c("ALGO","AUC")),aggregated=list(select(res,c("ALGO","AUC"))),
+          thresholded=list(select(resh,c("ALGO","AUC")))) %>% 
   enframe %>% unnest(cols=c("value")) %>% pivot_wider(names_from=name,values_from=AUC) %>% 
   column_to_rownames("ALGO") %>% as.matrix()
 
@@ -108,9 +108,13 @@ pander(aucs)
 #' albeit possibly informative will be biased by the selection of a subset 
 #' of edges for a given algorithm, making them theoretically incomparable.
 #'
+if (nrow(aucs) > 1) {
+  
+
 heatmap.2(aucs,trace="none",col=hpal,margins=c(7.1,7.1))
 
 heatmap.2(aucs,trace="none",col=hpal,margins=c(7.1,7.1),Colv=FALSE,dendrogram="row")
+}
 
 #' ### AUCs penalised by the number of Gold Standard (GS) edges used
 #' The rationale here is to check the effect of a limited number of GS on the 
@@ -129,8 +133,9 @@ paucs <- aucs * t(t(gsNum) / colMaxs(gsNum))
 
 pander(paucs)
 
+if (nrow(paucs) > 1) {
 heatmap.2(paucs,trace="none",col=hpal,margins=c(7.1,7.1),Colv=FALSE,dendrogram="row")
-
+}
 
 #' # Session Info
 #' ```{r session info, echo=FALSE}

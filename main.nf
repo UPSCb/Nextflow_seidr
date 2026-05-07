@@ -34,6 +34,9 @@ include {ROC} from './modules/Roc.nf'
 
 include {ROCNONEGATIVE} from './modules/Roc_NoNegative.nf'
 
+include {ROCPLOT} from './modules/RocPlot.nf'
+
+
 workflow {
     // Create input channel
     input_ch = channel.of(
@@ -99,6 +102,10 @@ workflow {
     // Create channel for HARDTHRESHOLD output with identifier
     hardthreshold_ch = HARDTHRESHOLD.out
         .map { sf_file -> tuple("hardthreshold", sf_file) }
+
+    // Create channel for AGGREGATE output with identifier
+    aggregate_ch = AGGREGATE.out
+        .map { sf_file -> tuple("aggregated", sf_file) }
     
 
     // Create channel for BACKBONE outputs with identifiers
@@ -112,7 +119,7 @@ workflow {
         }
     
     // Combine all evaluation files
-    all_evaluation_files = hardthreshold_ch.mix(backbone_ch)
+    all_evaluation_files = hardthreshold_ch.mix(backbone_ch).mix(aggregate_ch)
     
     // Conditional ROC analysis based on NegativeGoldStandard parameter
     if (params.NegativeGoldStandard && params.NegativeGoldStandard != "") {
@@ -122,12 +129,19 @@ workflow {
             file(params.PositiveGoldStandard, checkIfExists: true),
             file(params.NegativeGoldStandard, checkIfExists: true)
         )
+        
+        // Generate ROC plots
+        ROCPLOT(ROC.out.roc_file.collect())
+        
     } else {
         // Use ROCNONEGATIVE process when NegativeGoldStandard is empty
         ROCNONEGATIVE(
             all_evaluation_files,
             file(params.PositiveGoldStandard, checkIfExists: true)
         )
+        
+        // Generate ROC plots for no negative analysis
+        ROCPLOT(ROCNONEGATIVE.out.roc_file.collect())
     }
 
 }
