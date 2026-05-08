@@ -12,7 +12,7 @@ process ROCPLOT {
     script:
     """
     # Run the R script to generate the report using relative path to pixi environment
-    pixi run --manifest-path ${params.pixienv} \
+    pixi run --manifest-path ${projectDir}/${params.pixienv}  \
     R -e "rmarkdown::render('${r_script}', output_file='seidr_roc_report.html')"
     """
 }
