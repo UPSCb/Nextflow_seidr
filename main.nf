@@ -131,7 +131,10 @@ workflow {
         )
         
         // Generate ROC plots
-        ROCPLOT(ROC.out.roc_file.collect())
+        ROCPLOT(
+            ROC.out.roc_file.collect(),
+            file(params.roc_script, checkIfExists: true)
+        )
         
     } else {
         // Use ROCNONEGATIVE process when NegativeGoldStandard is empty
@@ -141,7 +144,10 @@ workflow {
         )
         
         // Generate ROC plots for no negative analysis
-        ROCPLOT(ROCNONEGATIVE.out.roc_file.collect())
+        ROCPLOT(
+            ROCNONEGATIVE.out.roc_file.collect(),
+            file(params.roc_script, checkIfExists: true)
+        )
     }
 
 }

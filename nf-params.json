@@ -1,0 +1,11 @@
+{
+    "expr": "data/headless.tsv",
+    "genes": "data/genes.tsv",
+    "NumGenes": 24107,
+    "outdir": "data/seidr/results",
+    "seidr_container": "singularity/seidr_0.14.2.sif",
+    "PositiveGoldStandard": "data/Positive_Control_edges_from_KEGG.tsv",
+    "NegativeGoldStandard": "",
+    "roc_script": "src/R/seidrRoc.R",
+    "pixienv": "data/pixi_rocplot/"
+}

@@ -4,14 +4,15 @@ process ROCPLOT {
 
     input:
     path(roc_files)
+    path(r_script)
 
     output:
     path("seidr_roc_report.html"), emit: html_report
 
     script:
     """
-    # Run the R script to generate the report
-    pixi run --manifest-path /pfs/proj/nobackup/fs/projnb10/hpc2nstor2025-133/try_nextflow_seidr/pixi_rocplot \
-    R -e "rmarkdown::render('${projectDir}/src/R/seidrRoc.R', output_file='seidr_roc_report.html')"
+    # Run the R script to generate the report using relative path to pixi environment
+    pixi run --manifest-path ${params.pixienv} \
+    R -e "rmarkdown::render('${r_script}', output_file='seidr_roc_report.html')"
     """
 }

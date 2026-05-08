@@ -13,4 +13,6 @@ set -u -o pipefail
 ml Nextflow/25.10.0   GCCcore/14.3.0 Graphviz/13.1.2-minimal
 
 
-nextflow run main.nf -work-dir data/workdir  -c nextflow.config   -with-trace -with-report data/report.html -resume
+nextflow run main.nf -work-dir data/workdir  -c nextflow.config  \
+ -with-trace -with-report data/report.html \
+ -params-file nf-params.json -resume
