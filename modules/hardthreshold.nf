@@ -1,7 +1,7 @@
 process HARDTHRESHOLD {
     container params.seidr_container
 
-    publishDir "${params.outdir}/hardthreshold", mode: 'symlink'
+    publishDir "${params.outdir}/hardthreshold", mode: 'copy'
 
     input:
     path(aggregated_sf)

@@ -1,6 +1,6 @@
 process ROCPLOT {
 
-    publishDir "${params.outdir}/ROC_plots", mode: 'symlink'
+    publishDir "${params.outdir}/ROC_plots", mode: 'copy'
 
     input:
     path(roc_files)

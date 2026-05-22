@@ -1,7 +1,7 @@
 process ROCNONEGATIVE {
     container params.seidr_container
 
-    publishDir "${params.outdir}/ROC_NoNegative", mode: 'symlink'
+    publishDir "${params.outdir}/ROC_NoNegative", mode: 'copy'
 
     input:
     tuple val(sample_id), path(evaluation_sf)

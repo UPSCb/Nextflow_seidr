@@ -1,7 +1,7 @@
 process BACKBONE {
     container params.seidr_container
 
-    publishDir "${params.outdir}/backbone", mode: 'symlink'
+    publishDir "${params.outdir}/backbone", mode: 'copy'
 
     input:
     tuple val(threshold), val(index), path(aggregated_sf)

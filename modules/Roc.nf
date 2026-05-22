@@ -1,7 +1,7 @@
 process ROC {
     container params.seidr_container
 
-    publishDir "${params.outdir}/ROC", mode: 'symlink'
+    publishDir "${params.outdir}/ROC", mode: 'copy'
 
     input:
     tuple val(sample_id), path(evaluation_sf)
