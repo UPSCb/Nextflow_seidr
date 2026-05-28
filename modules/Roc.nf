@@ -13,6 +13,6 @@ process ROC {
 
     script:
     """
-    seidr roc -f -n ${evaluation_sf} -g ${positive_gold_standard} -x ${negative_gold_standard} > ${sample_id}.roc.tsv
+    seidr roc -a -p 1000 -f -n ${evaluation_sf} -g ${positive_gold_standard} -x ${negative_gold_standard} > ${sample_id}.roc.tsv
     """
 }
