@@ -12,7 +12,7 @@ process AGGREGATE {
     script:
     def input_files = sf_files.collect { it.name }.join(' ')
     """
-    seidr aggregate -f -O ${task.cpus} ${input_files}
+    seidr aggregate -k -m irp -f -O ${task.cpus} ${input_files}
     """
     
 }
