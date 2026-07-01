@@ -77,11 +77,17 @@ any(is.na(vst))
 dir.create(here("data/seidr"), recursive=TRUE)
 
 
-#' Here we filter the VST matrix to include all genes with any expression above a standard deviation 
-#' of 0 across all samples. This way we don't lose genes that might are lowly expressed but might be 
-#' very central and play an important role in our networks.
+#' Here we filter the VST matrix to include all genes that were not removed by the DESeq2 independent filter.
+#' However, we keep genes that were removed by the cooks distance test
 #' 
-filtered_vst <- vst[which(rowSds(vst) > 0),]
+dds <- DESeq2(dds)
+
+genes_to_keep <- as.data.frame(results(dds))  |> as_tibble(rownames="Gene")  |>
+filter(!(is.na(padj) & !is.na(pvalue)))  |>
+filter(!is.na(log2FoldChange))  |>
+select(Gene)  |> pull()
+
+filtered_vst <- vst[genes_to_keep,]
 
 #' * gene by column, without names matrix
 write.table(t(filtered_vst),
